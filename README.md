@@ -159,14 +159,15 @@ func init() {
 
 ```sh
  $ gomobile build -target=android/arm
+
+ And the extract libgo_.so from the .apk package
 ```
 
-And the extract libgo_.so from the .apk package.
 
 ### Use, example on android
 
 
-``java
+```java
 package com.example.srplab.testgo;
 
 import android.support.v7.app.AppCompatActivity;
@@ -212,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 ```
+
 
 More Info:
 --------
