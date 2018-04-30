@@ -141,7 +141,7 @@ func init() {
 }
 ```
 
-### Build
+### Build to share library
 
 - Linux
 
@@ -164,7 +164,10 @@ func init() {
 ```
 
 
-### Use, example on android
+### Use the share library, 
+
+use "_DoFile" function of cle to load the share library,  
+example on android
 
 
 ```java
