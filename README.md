@@ -71,6 +71,148 @@ func main() {
 }
 ```
 
+Capture output from other scripts:
+--------
+
+Register CallBack function, as follow
+
+```go
+package main
+
+import "fmt"
+import "github.com/srplab/starcore_for_go/stargo"
+
+func MsgCallBack(ServiceGroupID uint32, uMsg uint32, wParam interface{}, lParam interface{}) (IsProcessed bool, Result interface{}) {
+	if uMsg == stargo.MSG_VSDISPMSG || uMsg == stargo.MSG_VSDISPLUAMSG || uMsg == stargo.MSG_DISPMSG || uMsg == stargo.MSG_DISPLUAMSG {
+		fmt.Println(wParam)
+	} else {
+		fmt.Println(ServiceGroupID, uMsg, wParam, lParam)
+	}
+	return false, 0
+}
+
+func main() {
+	Service := stargo.InitSimple("test", "123", 0, 0)
+	SrvGroup := Service.Get("_ServiceGroup").(*stargo.StarSrvGroup)
+	Service.CheckPassword(false)
+
+	stargo.RegMsgCallBack_P(MsgCallBack)
+
+    ...
+}
+```
+
+Develop extension modules:
+--------
+
+Set the callback function in the initialization function
+
+- Call "RegScriptInitCallBack_P" to register the function which will be called when the module is loaded.
+- Call "RegAttachRawContextCallBack_P" to register function which will be called when other scripts call AttachRawContext function of cle.
+- Call "RegScriptTermCallBack_P" to register the function which will be called when the module is unloaded.
+
+```go
+func init() {
+	stargo.RegAttachRawContextCallBack_P(func(ContextName string) interface{} {
+		if ContextName == "gofunc" {
+			return func(v1 string, v2 float32) string {
+				stargo.Println(v1)
+				stargo.Println(v2)
+				return "hello fro go"
+			}
+		}
+		return nil
+	})
+
+	stargo.RegScriptTermCallBack_P(func() {
+		stargo.Println("go script engine exit...")
+	})
+
+	stargo.RegScriptInitCallBack_P(func(SrvGroup *stargo.StarSrvGroup, Service *stargo.StarService) {
+		stargo.Println("go script engine init...")
+
+		/*--GoObject can be called from other script */
+		s := Service.New("GoObject")
+		s.RegScriptProc_P("PrintHello", func(CleGroup *stargo.StarSrvGroup, CleService *stargo.StarService, CleObject *stargo.StarObject, Paras []interface{}) interface{} {
+			stargo.Println(Paras)
+			return []interface{}{"return from go", 345.4}
+		})
+	})
+}
+```
+
+### Build
+
+- Linux
+
+```sh
+ $ go build -buildmode=c-shared -o star_go.so
+```
+
+- Windows
+
+```sh
+ $ go build -buildmode=c-shared -o star_go.so
+```
+
+- Android
+
+```sh
+ $ gomobile build -target=android/arm
+```
+
+And the extract libgo_.so from the .apk package.
+
+### Use, example on android
+
+
+``java
+package com.example.srplab.testgo;
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+import com.srplab.www.starcore.*;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        /*----init starcore----*/
+        StarCoreFactoryPath.StarCoreCoreLibraryPath = this.getApplicationInfo().nativeLibraryDir;
+        StarCoreFactoryPath.StarCoreShareLibraryPath = this.getApplicationInfo().nativeLibraryDir;
+        StarCoreFactoryPath.StarCoreOperationPath = "/data/data/"+getPackageName()+"/files";
+
+        final StarCoreFactory starcore= StarCoreFactory.GetFactory();
+        StarServiceClass Service=starcore._InitSimple("test","123",0,0);
+        starcore._RegMsgCallBack_P(new StarMsgCallBackInterface() {
+            public Object Invoke(int ServiceGroupID, int uMes, Object wParam, Object lParam) {
+                if (uMes == starcore._GetInt("MSG_VSDISPMSG") || uMes == starcore._GetInt("MSG_VSDISPLUAMSG")) {
+                    System.out.println((String) wParam);
+                }
+                if (uMes == starcore._GetInt("MSG_DISPMSG") || uMes == starcore._GetInt("MSG_DISPLUAMSG")) {
+                    System.out.println("++++++++++++++++" + (String) wParam);
+                }
+                return null;
+            }
+        });
+        StarSrvGroupClass SrvGroup = (StarSrvGroupClass)Service._Get("_ServiceGroup");
+        Service._CheckPassword(false);
+
+        Object[] result = Service._DoFile("",this.getApplicationInfo().nativeLibraryDir+"/libgo_.so","");
+        System.out.println(result);
+
+        System.out.println(Service._Get("GoObject"));
+        StarObjectClass GoObject = (StarObjectClass)Service._GetObject("GoObject");
+        System.out.println(GoObject);
+        System.out.println(GoObject._Call("PrintHello","------------1",234.56));
+    }
+}
+```
+
 More Info:
 --------
 
