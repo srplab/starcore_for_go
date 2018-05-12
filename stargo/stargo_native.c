@@ -400,7 +400,7 @@ SRPDLLEXPORT void SRPAPI StarCoreService_Term2(void *StarCore, struct StructOfVS
 
 VS_INT64 stargo_CoreHandle()
 {
-	return (VS_INT64)hDllInstance;
+	return (VS_INT64)(VS_UWORD)hDllInstance;
 }
 
 VS_UWORD stargo_MsgCallBack( VS_ULONG ServiceGroupID, VS_ULONG uMsg, VS_UWORD wParam, VS_UWORD lParam, VS_BOOL *IsProcessed, VS_UWORD Para )
@@ -480,7 +480,7 @@ VS_BOOL stargo_uuidisvalid(VS_UUID *u)
 
 void *stargo_ToPointer64(VS_INT64 in)
 {
-	return (void *)in;
+	return (void *)(VS_UWORD)in;
 }
 
 void *stargo_ToPointer(VS_UWORD in)

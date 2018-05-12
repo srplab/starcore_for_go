@@ -5,6 +5,12 @@ The library is written in golang, which supports go language to call other scrip
 
 It supports android, windows and linux platforms
 
+Change at 2018/05/12
+--------
+
+## New Post: [Go Extension for Android](https://srplab.github.io/go/2018/05/11/go_extension_for_android.html)
+
+
 Install:
 --------
 
