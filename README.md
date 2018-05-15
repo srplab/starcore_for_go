@@ -215,50 +215,50 @@ supported functions: V0.5.0,  test for go version 1.10
 
 stargo:
     InitSimple
-	InitSimpleEx
-	InitCore
-	GetSrvGroup
-	ModuleExit
-	ModuleClear
+    InitSimpleEx
+    InitCore
+    GetSrvGroup
+    ModuleExit
+    ModuleClear
 
-	RegMsgCallBack_P     : func(ServiceGroupID uint32, uMsg uint32, wParam interface{}, lParam interface{}) (IsProcessed bool, Result interface{})
-	RegDispatchRequest_P : func()
-	SRPDispatch
-	SRPLock
-	SRPUnLock
-	SetRegisterCode
-	IsRegistered
+    RegMsgCallBack_P     : func(ServiceGroupID uint32, uMsg uint32, wParam interface{}, lParam interface{}) (IsProcessed bool, Result interface{})
+    RegDispatchRequest_P : func()
+    SRPDispatch
+    SRPLock
+    SRPUnLock
+    SetRegisterCode
+    IsRegistered
     SetLocale
     GetLocale
     Version
     GetScriptIndex
     SetScript
-	DetachCurrentThread
-	CoreHandle
+    DetachCurrentThread
+    CoreHandle
 
 
 StarSrvGroup:
     CreateService
-	GetService
-	ClearService
+    GetService
+    ClearService
     NewParaPkg   : []interface{}, map[string]inteface{}->dictflag set, []int8/uint8->binary buf []int16/32/... ->
-	NewBinBuf
-	NewSXml
-	IsObject
-	IsParaPkg
-	IsBinBuf
-	IsSXml
-	GetServicePath
-	SetServicePath
-	ServicePathIsSet
-	GetCurrentPath
-	ImportService
-	ClearServiceEx
+    NewBinBuf
+    NewSXml
+    IsObject
+    IsParaPkg
+    IsBinBuf
+    IsSXml
+    GetServicePath
+    SetServicePath
+    ServicePathIsSet
+    GetCurrentPath
+    ImportService
+    ClearServiceEx
     RunScript
     RunScriptEx
     DoFile
     DoFileEx
-	SetClientPort
+    SetClientPort
     SetTelnetPort
     SetOutputPort
     SetWebServerPort
@@ -266,24 +266,24 @@ StarSrvGroup:
     LoadRawModule
     GetLastError
     GetLastErrorInfo
-	SUnLockGC
-	GetCorePath
-	GetUserPath
-	GetLocalIP
-	GetLocalIPEx
-	GetObjectNum
-	ActiveScriptInterface
-	PreCompile
+    SUnLockGC
+    GetCorePath
+    GetUserPath
+    GetLocalIP
+    GetLocalIPEx
+    GetObjectNum
+    ActiveScriptInterface
+    PreCompile
 
 StarService:
     Get          : "_Name"  "_ServiceGroup"
     GetObject
     GetObjectEx
-	New
-	RunScript
-	RunScriptEx
-	DoFile
-	DoFileEx
+    New
+    RunScript
+    RunScriptEx
+    DoFile
+    DoFileEx
     IsServiceRegistered
     CheckPassword
     LoadRawModule
@@ -296,108 +296,108 @@ StarService:
 StarParaPkg:
     GetNumber
     Get         : int value(index)
-	GetBool
-	GetInt
-	GetInt64
-	GetString
-	GetDouble
-	GetObject
-	GetParaPkg
-	GetBinBuf
+    GetBool
+    GetInt
+    GetInt64
+    GetString
+    GetDouble
+    GetObject
+    GetParaPkg
+    GetBinBuf
 
-	Clear
-	AppendFrom
-	Set
-	Build
-	Free
-	Dispose
-	ReleaseOwner
-	AsDict
-	IsDict
-	FromJSon
-	ToJSon
+    Clear
+    AppendFrom
+    Set
+    Build
+    Free
+    Dispose
+    ReleaseOwner
+    AsDict
+    IsDict
+    FromJSon
+    ToJSon
 
 StarBinBuf :
     GetOffset
 
-	Init
-	Clear
-	SaveToFile
-	SaveToFile
-	Read
-	Write
-	Free
-	ReleaseOwner
-	Dispose
+    Init
+    Clear
+    SaveToFile
+    SaveToFile
+    Read
+    Write
+    Free
+    ReleaseOwner
+    Dispose
 
 StarSXml :
-	LoadFromFile
-	LoadFromBuf
-	LoadFromBufEx
-	SaveToFile
-	SaveToBuf
-	GetStandalone
-	GetVersion
-	GetEncoding
-	FindElement
-	FindElementEx
-	FirstElement
-	NextElement
-	ParentElement
-	GetElement
-	GetElementEx
-	GetNs
-	GetNsValue
-	FindAttribute
-	FirstAttribute
-	NextAttribute
-	GetAttributeName
-	GetAttributeValue
-	GetSingleText
-	FirstText
-	NextText
-	GetText
-	SetDeclaration
-	RemoveDeclaration
+    LoadFromFile
+    LoadFromBuf
+    LoadFromBufEx
+    SaveToFile
+    SaveToBuf
+    GetStandalone
+    GetVersion
+    GetEncoding
+    FindElement
+    FindElementEx
+    FirstElement
+    NextElement
+    ParentElement
+    GetElement
+    GetElementEx
+    GetNs
+    GetNsValue
+    FindAttribute
+    FirstAttribute
+    NextAttribute
+    GetAttributeName
+    GetAttributeValue
+    GetSingleText
+    FirstText
+    NextText
+    GetText
+    SetDeclaration
+    RemoveDeclaration
 
 StarObject :
-	Get   : "_Service"  "_Class"  "_ID"  "_Name"
-	GetBool
-	GetInt
-	GetInt64
-	GetString
-	GetDouble
-	GetObject
-	GetParaPkg
-	GetBinBuf
+    Get   : "_Service"  "_Class"  "_ID"  "_Name"
+    GetBool
+    GetInt
+    GetInt64
+    GetString
+    GetDouble
+    GetObject
+    GetParaPkg
+    GetBinBuf
 
-	Set   : "_Name"
-	Call
-	CallBool
-	CallInt
-	CallInt64
-	CallString
-	CallDouble
-	CallObject
-	CallParaPkg
-	CallBinBuf
+    Set   : "_Name"
+    Call
+    CallBool
+    CallInt
+    CallInt64
+    CallString
+    CallDouble
+    CallObject
+    CallParaPkg
+    CallBinBuf
 
-	New
-	Free
-	Dispose
-	RawToParaPkg
-	DeferFree
-	IsInFree
-	GetSourceScript
-	GetRefEx
-	GetRefInfo
-	IsValid
-	GetLastError
-	GetLastErrorInfo
-	RegScriptProc_P      :  func(CleGroup *StarSrvGroup,CleService *StarService,CleObject *StarObject,Paras []interface{}) interface{}
-	ReleaseOwnerEx
-	IsSLock
-	AttachRawObject
+    New
+    Free
+    Dispose
+    RawToParaPkg
+    DeferFree
+    IsInFree
+    GetSourceScript
+    GetRefEx
+    GetRefInfo
+    IsValid
+    GetLastError
+    GetLastErrorInfo
+    RegScriptProc_P      :  func(CleGroup *StarSrvGroup,CleService *StarService,CleObject *StarObject,Paras []interface{}) interface{}
+    ReleaseOwnerEx
+    IsSLock
+    AttachRawObject
 
 note:
 
