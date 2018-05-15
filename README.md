@@ -207,6 +207,235 @@ public class MainActivity extends AppCompatActivity {
 }
 ```
 
+API Interface:
+--------
+
+```
+supported functions: V0.5.0,  test for go version 1.10
+
+stargo:
+    InitSimple
+	InitSimpleEx
+	InitCore
+	GetSrvGroup
+	ModuleExit
+	ModuleClear
+
+	RegMsgCallBack_P     : func(ServiceGroupID uint32, uMsg uint32, wParam interface{}, lParam interface{}) (IsProcessed bool, Result interface{})
+	RegDispatchRequest_P : func()
+	SRPDispatch
+	SRPLock
+	SRPUnLock
+	SetRegisterCode
+	IsRegistered
+    SetLocale
+    GetLocale
+    Version
+    GetScriptIndex
+    SetScript
+	DetachCurrentThread
+	CoreHandle
+
+
+StarSrvGroup:
+    CreateService
+	GetService
+	ClearService
+    NewParaPkg   : []interface{}, map[string]inteface{}->dictflag set, []int8/uint8->binary buf []int16/32/... ->
+	NewBinBuf
+	NewSXml
+	IsObject
+	IsParaPkg
+	IsBinBuf
+	IsSXml
+	GetServicePath
+	SetServicePath
+	ServicePathIsSet
+	GetCurrentPath
+	ImportService
+	ClearServiceEx
+    RunScript
+    RunScriptEx
+    DoFile
+    DoFileEx
+	SetClientPort
+    SetTelnetPort
+    SetOutputPort
+    SetWebServerPort
+    InitRaw
+    LoadRawModule
+    GetLastError
+    GetLastErrorInfo
+	SUnLockGC
+	GetCorePath
+	GetUserPath
+	GetLocalIP
+	GetLocalIPEx
+	GetObjectNum
+	ActiveScriptInterface
+	PreCompile
+
+StarService:
+    Get          : "_Name"  "_ServiceGroup"
+    GetObject
+    GetObjectEx
+	New
+	RunScript
+	RunScriptEx
+	DoFile
+	DoFileEx
+    IsServiceRegistered
+    CheckPassword
+    LoadRawModule
+    NewRawProxy
+    ImportRawContext
+    ImportRawObject
+    GetLastError
+    GetLastErrorInfo
+
+StarParaPkg:
+    GetNumber
+    Get         : int value(index)
+	GetBool
+	GetInt
+	GetInt64
+	GetString
+	GetDouble
+	GetObject
+	GetParaPkg
+	GetBinBuf
+
+	Clear
+	AppendFrom
+	Set
+	Build
+	Free
+	Dispose
+	ReleaseOwner
+	AsDict
+	IsDict
+	FromJSon
+	ToJSon
+
+StarBinBuf :
+    GetOffset
+
+	Init
+	Clear
+	SaveToFile
+	SaveToFile
+	Read
+	Write
+	Free
+	ReleaseOwner
+	Dispose
+
+StarSXml :
+	LoadFromFile
+	LoadFromBuf
+	LoadFromBufEx
+	SaveToFile
+	SaveToBuf
+	GetStandalone
+	GetVersion
+	GetEncoding
+	FindElement
+	FindElementEx
+	FirstElement
+	NextElement
+	ParentElement
+	GetElement
+	GetElementEx
+	GetNs
+	GetNsValue
+	FindAttribute
+	FirstAttribute
+	NextAttribute
+	GetAttributeName
+	GetAttributeValue
+	GetSingleText
+	FirstText
+	NextText
+	GetText
+	SetDeclaration
+	RemoveDeclaration
+
+StarObject :
+	Get   : "_Service"  "_Class"  "_ID"  "_Name"
+	GetBool
+	GetInt
+	GetInt64
+	GetString
+	GetDouble
+	GetObject
+	GetParaPkg
+	GetBinBuf
+
+	Set   : "_Name"
+	Call
+	CallBool
+	CallInt
+	CallInt64
+	CallString
+	CallDouble
+	CallObject
+	CallParaPkg
+	CallBinBuf
+
+	New
+	Free
+	Dispose
+	RawToParaPkg
+	DeferFree
+	IsInFree
+	GetSourceScript
+	GetRefEx
+	GetRefInfo
+	IsValid
+	GetLastError
+	GetLastErrorInfo
+	RegScriptProc_P      :  func(CleGroup *StarSrvGroup,CleService *StarService,CleObject *StarObject,Paras []interface{}) interface{}
+	ReleaseOwnerEx
+	IsSLock
+	AttachRawObject
+
+note:
+
+1)  As for how to use these functions, please refer to the interface manual and programming guide
+
+2)  Conversion of variable types :
+go                                ->       other script
+
+bool                                               bool
+int8,uint8,int16,uint16,int32,uint32               int
+int,uint                                           int or int64
+float32,float64                                    double
+string                                             string
+map[string]interface{}                             parapkg dict
+[]bool                                             parapkg(bool)
+[]int8,[]uint8                                     binbuf
+[]int16,[]uint16,[]int32,[]uint32   parapkg(int)
+[]int,[]uint                                       parapkg(int/int64)
+[]int64,[]uint64                                   parapkg(int64)
+[]float32,[]float64                                parapkg(double)
+[]string                                           parapkg(string)
+others                                             cle object (raw)
+
+3)  function can be called from other scripts
+struct methods : the input or output parameter must be types defined above or interface{} / []interface{}
+lambda functions
+
+4)  stargo.RegAttachRawContextCallBack_P is used to return go object when other scripts call Service._ImportRawContext
+
+5)  stargo.RegScriptTermCallBack_P is used before go share library unloaded
+
+6)  stargo.RegScriptInitCallBack_P is used after go share library loaded
+
+7)  stargo.Println/Printf/Print should be used instead of fmt.Println/Printf/Print
+
+```
+
+
 
 More Info:
 --------
