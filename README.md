@@ -11,8 +11,9 @@ Change at 2018/07/22
 suppor ios
 --------
 
-```build script example,
+- build script example,
 
+```
 export PATH="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/:/usr/local/bin:/usr/bin:/bin:$PATH" 
 export CFLAGS="-arch x86_64 -miphoneos-version-min=6.0 -isysroot "$(xcrun -sdk iphonesimulator --show-sdk-path)
 export CC="clang $CFLAGS"
@@ -22,7 +23,7 @@ export CGO_ENABLED=1
 go build -tags='ios' -buildmode=c-archive -o libstar_go.a
 ```
 
-### note: if the ios static library will be used with starcore, the output library name should be :libstar_go.a
+*note: if the ios static library will be used with starcore, the output library name should be :libstar_go.a*
 
 
 Change at 2018/05/12
