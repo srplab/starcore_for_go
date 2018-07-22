@@ -19,7 +19,23 @@ package stargo
 #cgo android,amd64  CFLAGS: -Wno-macro-redefined -I./include -DENV_ANDROID -DENV_M64
 #cgo android,amd64 LDFLAGS: -L./android.static/x86_64 -lvsopenapi_c_stub -ldl
 
-//darwin
+#cgo darwin,!android,!ios CFLAGS: -I./include -DENV_MACOS -DENV_M64
+#cgo darwin,!android,!ios LDFLAGS: -L./macos.static -lvsopenapi_c_stub -ldl
+
+#cgo darwin,amd64,ios CFLAGS: -I./include -DENV_IOS -DENV_M64
+#cgo darwin,amd64,ios LDFLAGS: -L./ios.static -lvsopenapi_c_stub -L./ios.static/starcore.onlyforbuildstatic -lstarcore
+
+#cgo darwin,386,ios CFLAGS: -I./include -DENV_IOS -DENV_M32
+#cgo darwin,386,ios LDFLAGS: -L./ios.static -lvsopenapi_c_stub -L./ios.static/starcore.onlyforbuildstatic -lstarcore
+
+#cgo darwin,arm,ios CFLAGS: -I./include -DENV_IOS -DENV_M32
+#cgo darwin,arm,ios LDFLAGS: -L./ios.static -lvsopenapi_c_stub -L./ios.static/starcore.onlyforbuildstatic -lstarcore
+
+#cgo darwin,arm64,ios CFLAGS: -I./include -DENV_IOS -DENV_M32
+#cgo darwin,arm64,ios LDFLAGS: -L./ios.static -lvsopenapi_c_stub -L./ios.static/starcore.onlyforbuildstatic -lstarcore
+
+//add tags for ios :  go build -tags='ios' -buildmode=c-archive -o libgosharelib.a
+//check >> go tool dist list -json
 
 #include "vsopenapi_c.h"
 #include "vsopenapi_c_stub.h"
@@ -187,7 +203,7 @@ StarSXml :
 	RemoveDeclaration
 
 StarObject :
-	Get   : "_Service"  "_Class"  "_ID"  "_Name"
+	Get   : "_Service"  "_Class" "_Super"  "_ID"  "_Name"
 	GetBool
 	GetInt
 	GetInt64
@@ -7469,6 +7485,13 @@ func (desobject *StarObject) Get(InVar interface{}) interface{} {
 			}
 			return ToStarObject(SRPObjectTemp, SRPInterface, C.VS_FALSE)
 		}
+	case 0X1D031826: //_Super
+		if strings.Compare(Name, "_Super") == 0 {
+			if C.Star_SRPI_SetCallSuper(SRPInterface, SRPObject) == C.VS_FALSE {
+				return nil
+			}
+			return desobject
+		}
 	case 0X67F0ABC5: //_ID
 		if strings.Compare(Name, "_ID") == 0 {
 			var IDTemp C.VS_UUID
@@ -8478,13 +8501,13 @@ func VSScript_GoRawContext_WrapObject(SRPInterface unsafe.Pointer, ServiceGroupI
 		GoRawContext.Para = (*C.struct_StructOfGoRawContext_Para)(C.stargo_MallocStructOfGoRawContext_Para())
 		GoRawContext.Para.object = Object
 		GoRawContext.Para.ServiceGroupIndex = ServiceGroupIndex
-		C.Star_SRPI_CreateRawContextBuf(SRPInterface, Object, Const_GoString /*"go"*/, (*C.VS_INT8)((unsafe.Pointer)(&GoRawContext)), C.stargo_SizeOfStructOfGoRawContext())
 		//---need hook script general functions
 		C.Star_SRPI_RegLuaFunc(SRPInterface, Object, (*C.VS_CHAR)(C.NULL), (unsafe.Pointer)(C.stargo_VSScript_GoRawContext_GeneralFunction), C.stargo_PointerToUWord((unsafe.Pointer)(GoRawContext.Para)))
 		C.Star_SRPI_RegLuaFuncFilter(SRPInterface, Object, (C.VS_LuaFuncFilterProc)(C.stargo_VSScript_GoRawContext_LuaFuncFilter), C.stargo_PointerToUWord((unsafe.Pointer)(GoRawContext.Para)))
 		C.Star_SRPI_RegLuaGetValueFunc(SRPInterface, Object, (C.VS_LuaGetValueProc)(C.stargo_VSScript_GoRawContext_RegGetValue), C.stargo_PointerToUWord((unsafe.Pointer)(GoRawContext.Para)))
 		C.Star_SRPI_RegRawLuaSetValueFunc(SRPInterface, Object, (C.VS_LuaSetValueProc)(C.stargo_VSScript_GoRawContext_RegSetValue), C.stargo_PointerToUWord((unsafe.Pointer)(GoRawContext.Para)))
 		C.Star_SRPI_RegNewFunctionCallBack(SRPInterface, Object, (C.VS_NewFunctionCallBackProc)(C.stargo_VSScript_GoRawContext_NewFunctionCallBack), C.stargo_PointerToUWord((unsafe.Pointer)(GoRawContext.Para)))
+		C.Star_SRPI_CreateRawContextBuf(SRPInterface, Object, Const_GoString /*"go"*/, (*C.VS_INT8)((unsafe.Pointer)(&GoRawContext)), C.stargo_SizeOfStructOfGoRawContext())
 	} else {
 		if GoRawContextPtr.RefItem != nil {
 			g_GoRawContextRefManager.Free(GoRawContextPtr.RefItem)
@@ -10021,13 +10044,13 @@ func GoVSScript_AttachRawContext(Para C.VS_UWORD, ServiceGroupIndex C.VS_ULONG, 
 			C.stargo_inituuid(&GoRawContext.ContextHeader.ClassObjectID)
 		}
 
-		C.Star_SRPI_CreateRawContextBuf(SRPInterface, object, Const_GoString /*"go"*/, (*C.VS_INT8)((unsafe.Pointer)(&GoRawContext)), C.stargo_SizeOfStructOfGoRawContext())
 		//---need hook script general functions
 		C.Star_SRPI_RegLuaFunc(SRPInterface, object, (*C.VS_CHAR)(C.NULL), (unsafe.Pointer)(C.stargo_VSScript_GoRawContext_GeneralFunction), C.stargo_PointerToUWord((unsafe.Pointer)(GoRawContext.Para)))
 		C.Star_SRPI_RegLuaFuncFilter(SRPInterface, object, (C.VS_LuaFuncFilterProc)(C.stargo_VSScript_GoRawContext_LuaFuncFilter), C.stargo_PointerToUWord((unsafe.Pointer)(GoRawContext.Para)))
 		C.Star_SRPI_RegLuaGetValueFunc(SRPInterface, object, (C.VS_LuaGetValueProc)(C.stargo_VSScript_GoRawContext_RegGetValue), C.stargo_PointerToUWord((unsafe.Pointer)(GoRawContext.Para)))
 		C.Star_SRPI_RegRawLuaSetValueFunc(SRPInterface, object, (C.VS_LuaSetValueProc)(C.stargo_VSScript_GoRawContext_RegSetValue), C.stargo_PointerToUWord((unsafe.Pointer)(GoRawContext.Para)))
 		C.Star_SRPI_RegNewFunctionCallBack(SRPInterface, object, (C.VS_NewFunctionCallBackProc)(C.stargo_VSScript_GoRawContext_NewFunctionCallBack), C.stargo_PointerToUWord((unsafe.Pointer)(GoRawContext.Para)))
+		C.Star_SRPI_CreateRawContextBuf(SRPInterface, object, Const_GoString /*"go"*/, (*C.VS_INT8)((unsafe.Pointer)(&GoRawContext)), C.stargo_SizeOfStructOfGoRawContext())
 
 		return C.VS_TRUE
 	}

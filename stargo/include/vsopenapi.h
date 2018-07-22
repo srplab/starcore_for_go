@@ -5153,15 +5153,20 @@ extern SRPDLLEXPORT VS_BOOL SRPAPI StarCoreScript_Init(VS_CHAR *ScriptName,VS_CH
 #if defined(__cplusplus) || defined(c_plusplus)
 typedef void *(SRPAPI *Star_ObjectCBridge_ValueToObjC_Proc)(class ClassOfSRPInterface *SRPInterface, const VS_CHAR *typeDescription, VS_INT32 stackIndex, VS_BOOL *ResultIsRetained, VS_BOOL *Result); /*if ResultIsRetained returns VS_TRUE, then the caller will release the returned object */
 typedef VS_INT32 (SRPAPI *Star_ObjectCBridge_ValueFromObjC_Proc)(class ClassOfSRPInterface *SRPInterface, const VS_CHAR *typeDescription, void *buffer, VS_BOOL *Result);
-#else
-typedef void *(SRPAPI *Star_ObjectCBridge_ValueToObjC_Proc)(void *SRPInterface, const VS_CHAR *typeDescription, VS_INT32 stackIndex, VS_BOOL *ResultIsRetained, VS_BOOL *Result); /*if ResultIsRetained returns VS_TRUE, then the caller will release the returned object */
-typedef VS_INT32 (SRPAPI *Star_ObjectCBridge_ValueFromObjC_Proc)(void *SRPInterface, const VS_CHAR *typeDescription, void *buffer, VS_BOOL *Result);
-#endif
 typedef struct objc_object *id;
 extern "C" SRPDLLEXPORT void Star_ObjectCBridge_Init(void *In_Interface,Star_ObjectCBridge_ValueToObjC_Proc In_ValueToObjC_Proc,Star_ObjectCBridge_ValueFromObjC_Proc In_ValueFromObjC_Proc); /*In_ValueToObjC_Proc and In_ValueFromObjC_Proc may be set to NULL */
 extern "C" SRPDLLEXPORT void Star_ObjectCBridge_Term();
 extern "C" SRPDLLEXPORT void *_FromObjectC(id inst);
 extern "C" SRPDLLEXPORT id _ToObjectC(void *cleobject);
+#else
+typedef void *(SRPAPI *Star_ObjectCBridge_ValueToObjC_Proc)(void *SRPInterface, const VS_CHAR *typeDescription, VS_INT32 stackIndex, VS_BOOL *ResultIsRetained, VS_BOOL *Result); /*if ResultIsRetained returns VS_TRUE, then the caller will release the returned object */
+typedef VS_INT32 (SRPAPI *Star_ObjectCBridge_ValueFromObjC_Proc)(void *SRPInterface, const VS_CHAR *typeDescription, void *buffer, VS_BOOL *Result);
+typedef struct objc_object *id;
+extern SRPDLLEXPORT void Star_ObjectCBridge_Init(void *In_Interface,Star_ObjectCBridge_ValueToObjC_Proc In_ValueToObjC_Proc,Star_ObjectCBridge_ValueFromObjC_Proc In_ValueFromObjC_Proc); /*In_ValueToObjC_Proc and In_ValueFromObjC_Proc may be set to NULL */
+extern SRPDLLEXPORT void Star_ObjectCBridge_Term();
+extern SRPDLLEXPORT void *_FromObjectC(id inst);
+extern SRPDLLEXPORT id _ToObjectC(void *cleobject);
+#endif
 #endif
 
 

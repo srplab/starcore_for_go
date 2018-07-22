@@ -347,8 +347,11 @@ SRPDLLEXPORT VS_BOOL SRPAPI star_go_ScriptInit2(VS_CHAR *ScriptName, VS_CHAR *Pa
 	return VS_TRUE;
 }		
 
-
+#if defined(ENV_IOS)
+SRPDLLEXPORT VS_BOOL SRPAPI libstar_go_Init2(void *StarCore, struct StructOfVSStarCoreInterfaceTable *InterfaceTable )
+#else
 SRPDLLEXPORT VS_BOOL SRPAPI StarCoreService_Init2(void *StarCore, struct StructOfVSStarCoreInterfaceTable *InterfaceTable )
+#endif
 {
 	g_star_CoreFunctionTbl = InterfaceTable;
 	StarGo_SRPControlInterface = Star_StarCore_GetControlInterface(StarCore);
@@ -388,14 +391,44 @@ SRPDLLEXPORT VS_BOOL SRPAPI StarCoreService_Init2(void *StarCore, struct StructO
 	if( SRPInterface != NULL ){
 	    GoVSScript_InitRaw(0,BasicSRPInterface,SRPInterface);
 		Star_SRPI_Release(SRPInterface);
+	}else{
+		g_star_CoreFunctionTbl->SRPControl_ProcessError(StarGo_SRPControlInterface,VSFAULT_WARNING,"go",0,"service check password must be set to false before call dofile");
+		return VS_FALSE;
 	}
 	
 	return VS_TRUE + 1;  /*---should not unload the share library, valid for cle above 2.60 */
 }
 
+#if defined(ENV_IOS)
+SRPDLLEXPORT void SRPAPI libstar_go_Term2(void *StarCore, struct StructOfVSStarCoreInterfaceTable *InterfaceTable )
+#else
 SRPDLLEXPORT void SRPAPI StarCoreService_Term2(void *StarCore, struct StructOfVSStarCoreInterfaceTable *InterfaceTable )
+#endif
 {
 	stargo_starcore_ScriptTerm();
+}
+
+SRPDLLEXPORT VS_FUNCTION_TABLE *star_go_GetExportFunctionTable( )
+{
+    static VS_FUNCTION_TABLE FuncPtr[5];
+    strcpy(FuncPtr[0].FunctionName,"star_go_ScriptInit");
+    FuncPtr[0].FunctionAddr = (void *)star_go_ScriptInit;
+    strcpy(FuncPtr[1].FunctionName,"star_go_ScriptInit2");
+    FuncPtr[1].FunctionAddr = (void *)star_go_ScriptInit2;
+#if defined(ENV_IOS)	
+    strcpy(FuncPtr[2].FunctionName,"libstar_go_Init2");
+    FuncPtr[2].FunctionAddr = (void *)libstar_go_Init2;
+    strcpy(FuncPtr[3].FunctionName,"libstar_go_Term2");
+    FuncPtr[3].FunctionAddr = (void *)libstar_go_Term2;		
+#else
+    strcpy(FuncPtr[2].FunctionName,"StarCoreService_Init2");
+    FuncPtr[2].FunctionAddr = (void *)StarCoreService_Init2;
+    strcpy(FuncPtr[3].FunctionName,"StarCoreService_Term2");
+    FuncPtr[3].FunctionAddr = (void *)StarCoreService_Term2;	
+#endif			
+    FuncPtr[4].FunctionName[0] = 0;
+    FuncPtr[4].FunctionAddr = NULL;
+    return (VS_FUNCTION_TABLE *)FuncPtr;
 }
 
 VS_INT64 stargo_CoreHandle()
