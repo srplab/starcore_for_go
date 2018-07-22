@@ -31,7 +31,7 @@ package stargo
 #cgo darwin,arm,ios CFLAGS: -I./include -DENV_IOS -DENV_M32
 #cgo darwin,arm,ios LDFLAGS: -L./ios.static -lvsopenapi_c_stub -L./ios.static/starcore.onlyforbuildstatic -lstarcore
 
-#cgo darwin,arm64,ios CFLAGS: -I./include -DENV_IOS -DENV_M32
+#cgo darwin,arm64,ios CFLAGS: -I./include -DENV_IOS -DENV_M64
 #cgo darwin,arm64,ios LDFLAGS: -L./ios.static -lvsopenapi_c_stub -L./ios.static/starcore.onlyforbuildstatic -lstarcore
 
 //add tags for ios :  go build -tags='ios' -buildmode=c-archive -o libgosharelib.a
