@@ -14,13 +14,52 @@ suppor ios
 - build script example,
 
 ```
-export PATH="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/:/usr/local/bin:/usr/bin:/bin:$PATH" 
-export CFLAGS="-arch x86_64 -miphoneos-version-min=6.0 -isysroot "$(xcrun -sdk iphonesimulator --show-sdk-path)
-export CC="clang $CFLAGS"
-export GOOS=darwin
-export GOARCH=amd64
-export CGO_ENABLED=1
-go build -tags='ios' -buildmode=c-archive -o libstar_go.a
+rm -rf libstar_go.a
+
+export PATH="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/:/usr/local/bin:/usr/bin:/bin:$PATH"  
+
+arch=("i386" "x86_64" "arm64" "armv7");
+
+for s in ${arch[@]}; do
+  echo "build for $s"
+
+  export GOOS=darwin
+  export CGO_ENABLED=1
+  if [ "$s" == "armv7" ]; then
+    export CFLAGS="-arch $s -miphoneos-version-min=6.0 -isysroot "$(xcrun -sdk iphoneos --show-sdk-path)
+    export CC=/usr/local/go/misc/ios/clangwrap.sh
+    export GOARCH=arm
+    export GOARM=7
+  elif [ "$s" == "i386" ]; then
+    export CFLAGS="-arch $s -miphoneos-version-min=6.0 -isysroot "$(xcrun -sdk iphonesimulator --show-sdk-path)
+    export CC="clang $CFLAGS"
+    export GOARCH=386
+  elif [ "$s" == "x86_64" ]; then
+    export CFLAGS="-arch $s -miphoneos-version-min=6.0 -isysroot "$(xcrun -sdk iphonesimulator --show-sdk-path)
+    export CC="clang $CFLAGS"
+    export GOARCH=amd64
+  elif [ "$s" == "arm64" ]; then
+    export CFLAGS="-arch $s -miphoneos-version-min=6.0 -isysroot "$(xcrun -sdk iphoneos --show-sdk-path)
+    export CC="clang $CFLAGS"
+    export GOARCH=arm64
+  fi
+
+  go build -tags='ios' -buildmode=c-archive -o libstar_go.a
+  
+  mkdir $s
+  cp ./libstar_go.a $s
+  rm -rf ./libstar_go.a
+ 
+done
+
+lipo -create ./i386/libstar_go.a ./x86_64/libstar_go.a ./armv7/libstar_go.a ./arm64/libstar_go.a -o libstar_go.a
+
+rm -rf ./i386
+rm -rf ./x86_64
+rm -rf ./armv7
+rm -rf ./arm64
+
+lipo -info libstar_go.a
 ```
 
 *note: if the ios static library will be used with starcore, the output library name should be :libstar_go.a*
@@ -168,10 +207,60 @@ func init() {
 
 - Android
 
-```sh
- $ gomobile build -target=android/arm
+the work is tested with android-ndk-r12b
 
- And the extract libgo_.so from the .apk package
+first, create toolchain
+
+```sh
+/Users/srplab/android/android-sdk-macosx/android-ndk-r12b/build/tools/make-standalone-toolchain.sh --install-dir=android-toolchain.x86_64 --arch=x86_64
+/Users/srplab/android/android-sdk-macosx/android-ndk-r12b/build/tools/make-standalone-toolchain.sh --install-dir=android-toolchain.x86 --arch=x86
+/Users/srplab/android/android-sdk-macosx/android-ndk-r12b/build/tools/make-standalone-toolchain.sh --install-dir=android-toolchain.arm64 --arch=arm64
+/Users/srplab/android/android-sdk-macosx/android-ndk-r12b/build/tools/make-standalone-toolchain.sh --install-dir=android-toolchain.arm --arch=arm
+```
+
+compile script example
+
+```sh
+# compiled with android-ndk-r12b
+
+GO="/usr/local/go/bin/go"
+
+arch=("x86" "x86_64" "arm64" "arm");
+
+for s in ${arch[@]}; do
+  echo "build for $s"
+
+  export GOOS=android
+  export CGO_ENABLED=1
+
+  if [ "$s" == "arm" ]; then
+    export NDK_TOOLCHAIN=/Users/srplab/Desktop/ndk_toolchain/android-toolchain.arm
+    export CC=$NDK_TOOLCHAIN/bin/arm-linux-androideabi-gcc
+    export GOARCH=arm
+    export GOARM=7
+  elif [ "$s" == "x86" ]; then
+    export NDK_TOOLCHAIN=/Users/srplab/Desktop/ndk_toolchain/android-toolchain.x86
+    export CC=$NDK_TOOLCHAIN/bin/i686-linux-android-gcc
+    export GOARCH=386
+  elif [ "$s" == "x86_64" ]; then
+    export NDK_TOOLCHAIN=/Users/srplab/Desktop/ndk_toolchain/android-toolchain.x86_64
+    export CC=$NDK_TOOLCHAIN/bin/x86_64-linux-android-gcc
+    export GOARCH=amd64
+  elif [ "$s" == "arm64" ]; then
+    export NDK_TOOLCHAIN=/Users/srplab/Desktop/ndk_toolchain/android-toolchain.arm64
+    export CC=$NDK_TOOLCHAIN/bin/aarch64-linux-android-gcc
+    export GOARCH=arm64
+  fi
+
+  $GO build -buildmode=c-shared -o libstar_go.so
+  
+  cd ..
+  mkdir $s
+  cp ./libstar_go.so $s
+  rm -rf ./libstar_go.so
+ 
+done
+
 ```
 
 
