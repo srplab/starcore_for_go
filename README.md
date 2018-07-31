@@ -254,7 +254,6 @@ for s in ${arch[@]}; do
 
   $GO build -buildmode=c-shared -o libstar_go.so
   
-  cd ..
   mkdir $s
   cp ./libstar_go.so $s
   rm -rf ./libstar_go.so
